@@ -43,22 +43,28 @@ def check(username, password, grade='YJS'):
             start_json = s.post(url=start_url, data=data, headers=headers)
             step_id = re.search('(?<=form/)\\d*(?=/render)', start_json.text)[0]
 
+
             #获取打卡基础信息
             data = {'stepId': step_id, 'csrfToken': csrf_token}
             render = s.post(url=render_url, data=data, headers=headers)
             render_info = json.loads(render.content)['entities'][0]['data']
-
-            #打卡
+            if(render_info['fieldXY3'] == ""): # 党史学习
+                render_info["fieldDJXXyc"] = "1"
+            # 打卡
             data = {
                 'actionId': 1,
-                'formData': json.dumps(render_info),
+                'formData':  json.dumps(render_info),
                 'nextUsers': '{}',
                 'stepId': step_id,
                 'timestamp': int(time.time()),
+                # 'boundFields': ','.join(render_info['fields'].keys()),
                 'csrfToken': csrf_token,
                 'lang': 'zh'
             }
 
+            # print(data)
+
+            # time.sleep(30)
             res = s.post(url=action_url, data=data, headers=headers)
 
             now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
