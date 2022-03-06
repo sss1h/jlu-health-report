@@ -73,6 +73,10 @@ def check(username, password, grade='YJS'):
                 return
             else:
                 print(f"[{now_time}] {username} failed.")
+                
+                
+        except requests.exceptions.ConnectionError as e:
+            render = "No response"
 
         except Exception as e:
             print(e)
